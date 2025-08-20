@@ -555,11 +555,11 @@ bool KolosalServerClient::addEngine(const std::string &engineId, const std::stri
         
         // Set comprehensive loading parameters
         json loadParams;
-        loadParams["n_ctx"] = 4096;
-        loadParams["n_keep"] = 2048;
+        loadParams["n_ctx"] = 8192;
+        loadParams["n_keep"] = 8192;
         loadParams["use_mmap"] = true;
         loadParams["use_mlock"] = true;
-        loadParams["n_parallel"] = 4;
+        loadParams["n_parallel"] = 1;
         loadParams["cont_batching"] = true;
         loadParams["warmup"] = false;
         loadParams["n_gpu_layers"] = 50;
