@@ -1,57 +1,32 @@
-# Prerequisites
-*.d
-
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Fortran module files
-*.mod
-*.smod
-
-# Build directories
-build/
-Build/
-out/
-build*/
-
-# Model files
-*.gguf
-
-# IDE files
-.vs/
-.vscode/
-*.vcxproj.user
-.idea/
-
-# Linux specific
-kolosal-cli
-kolosal-server
-*.so
-*.so.*
-
-# Windows specific  
+# If you prefer the allow list template instead of the deny list, see community template:
+# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+#
+# Binaries for programs and plugins
 *.exe
+*.exe~
 *.dll
-*.pdb
-*.ilk
+*.so
+*.dylib
 
-# Logs
-*.log
+# Test binary, built with `go test -c`
+*.test
 
-# Cache files
-.cache/
+# Code coverage profiles and other test artifacts
+*.out
+coverage.*
+*.coverprofile
+profile.cov
 
-install/
+# Dependency directories (remove the comment below to include it)
+# vendor/
 
-.DS_Store
+# Go workspace file
+go.work
+go.work.sum
 
-*.dmg
+# env file
+.env
 
-cert/
+# Editor/IDE
+# .idea/
+# .vscode/
