@@ -502,7 +502,7 @@ func (m fileListModel) View() string {
 				if pctf > 1 {
 					pctf = 1
 				}
-				dl = renderProgress(dlCol, pctf)
+				dl = renderProgress(dlCol, pctf, st.received, st.total)
 			}
 			line := left + " — " + q + "  " + mem
 			if dlCol > 0 {

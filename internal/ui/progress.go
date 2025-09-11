@@ -6,8 +6,7 @@ import (
 	"strings"
 )
 
-// renderProgress renders an ASCII/Unicode progress bar within width.
-func renderProgress(width int, pct float64) string {
+func renderProgress(width int, pct float64, received, total int64) string {
 	if width <= 0 {
 		return ""
 	}
@@ -19,9 +18,34 @@ func renderProgress(width int, pct float64) string {
 	}
 	percent := int(pct * 100)
 	percStr := fmt.Sprintf("%3d%%", percent)
+	bytesSuffix := ""
+	if total > 0 && received >= 0 && received <= total {
+		bytesSuffix = " " + humanSize(received, true) + "/" + humanSize(total, true)
+	}
 	const minBar = 6
-	minTotal := 1 + minBar + 1 + len(percStr)
-	if width < minTotal {
+	barWidth := width - 1 - 1 - len(percStr) // '[' + ']' + space + percent
+	if bytesSuffix != "" {
+		barWidth = barWidth - len(bytesSuffix)
+	}
+	if barWidth < minBar {
+		if bytesSuffix != "" {
+			shortSuffix := " " + humanSize(received, false) + "/" + humanSize(total, false)
+			bw2 := width - 1 - 1 - len(percStr) - len(shortSuffix)
+			if bw2 >= minBar {
+				bytesSuffix = shortSuffix
+				barWidth = bw2
+			} else {
+				bytesSuffix = ""
+				barWidth = width - 1 - 1 - len(percStr)
+			}
+		} else {
+			if barWidth < minBar {
+				barWidth = minBar
+			}
+		}
+	}
+	minTotal := 1 + minBar + 1 + len(percStr) // original minimal
+	if width < minTotal {                     // can't fit bar & percent; show percent tail-aligned
 		if width < len(percStr) {
 			r := []rune(percStr)
 			if width <= 0 {
@@ -35,7 +59,6 @@ func renderProgress(width int, pct float64) string {
 		}
 		return strings.Repeat(" ", pad) + percStr
 	}
-	barWidth := width - 1 - len(percStr) - 1
 	if barWidth < minBar {
 		barWidth = minBar
 	}
@@ -47,7 +70,7 @@ func renderProgress(width int, pct float64) string {
 		filled = barWidth
 	}
 	var b strings.Builder
-	b.Grow(1 + barWidth + 1 + len(percStr))
+	b.Grow(1 + barWidth + 1 + 1 + len(percStr) + len(bytesSuffix))
 	b.WriteByte('[')
 	full := "█"
 	empty := "░"
@@ -64,6 +87,9 @@ func renderProgress(width int, pct float64) string {
 	b.WriteByte(']')
 	b.WriteByte(' ')
 	b.WriteString(percStr)
+	if bytesSuffix != "" {
+		b.WriteString(bytesSuffix)
+	}
 	out := b.String()
 	rl := len([]rune(out))
 	if rl == width {
@@ -76,7 +102,6 @@ func renderProgress(width int, pct float64) string {
 	return string(r[:width])
 }
 
-// supportsUnicode heuristically checks for a UTF-8 locale.
 func supportsUnicode() bool {
 	for _, k := range []string{"LC_ALL", "LC_CTYPE", "LANG"} {
 		v := os.Getenv(k)
@@ -89,4 +114,25 @@ func supportsUnicode() bool {
 		}
 	}
 	return true
+}
+
+func humanSize(n int64, detailed bool) string {
+	if n < 0 {
+		return "0B"
+	}
+	const unit = 1024.0
+	f := float64(n)
+	units := []string{"B", "KB", "MB", "GB", "TB", "PB"}
+	i := 0
+	for f >= unit && i < len(units)-1 {
+		f /= unit
+		i++
+	}
+	if i == 0 { // bytes, no decimal
+		return fmt.Sprintf("%d%s", int64(f), units[i])
+	}
+	if detailed {
+		return fmt.Sprintf("%.1f%s", f, units[i])
+	}
+	return fmt.Sprintf("%d%s", int64(f+0.5), units[i])
 }
