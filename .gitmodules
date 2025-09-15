@@ -1,0 +1,3 @@
+[submodule "kolosal-server"]
+	path = kolosal-server
+	url = https://github.com/kolosalai/kolosal-server
