@@ -1,59 +1,73 @@
-# Prerequisites
-*.d
+# API keys and secrets
+.env
+.env~
+.env.local
+.env.*.local
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+# Code signing certificates and keys (NEVER commit these!)
+*.p12
+*.cer
+*.certSigningRequest
+*.key
+*.pem
+*.keychain
+*.keychain-db
+*.mobileprovision
+*.provisionprofile
 
-# Precompiled Headers
-*.gch
-*.pch
+# gemini-cli settings
+.gemini/
+!gemini/config.yaml
 
-# Fortran module files
-*.mod
-*.smod
+# Note: .gemini-clipboard/ is NOT in gitignore so Gemini can access pasted images
 
-# Build directories
-build/
-Build/
-out/
-build*/
+# Dependency directory
+node_modules
+bower_components
 
-# Model files
-*.gguf
+# Editors
+.idea
+*.iml
+.cursor
 
-# IDE files
-.vs/
-.vscode/
-*.vcxproj.user
-.idea/
-
-# Linux specific
-kolosal-cli
-kolosal-server
-*.so
-*.so.*
-
-# Windows specific  
-*.exe
-*.dll
-*.pdb
-*.ilk
-
-# Logs
-*.log
-
-# Cache files
-.cache/
-
-install/
-
+# OS metadata
 .DS_Store
+Thumbs.db
 
-*.dmg
+# TypeScript build info files
+*.tsbuildinfo
 
-cert/
-.qoder
-.qoder/
+# Ignore built ts files
+dist
+dist-ssr
+*.local
+
+# Docker folder to help skip auth refreshes
+.docker
+
+bundle
+
+# Test report files
+junit.xml
+packages/*/coverage/
+
+# Generated files
+packages/cli/src/generated/
+packages/core/src/generated/
+.integration-tests/
+packages/vscode-ide-companion/*.vsix
+
+# Desktop app (Tauri) build artifacts
+packages/desktop/src-tauri/target/
+packages/desktop/src-tauri/Cargo.lock
+
+# Kolosal Cli Configs
+.kolosal/
+logs/
+# GHA credentials
+gha-creds-*.json
+
+KOLOSAL.md
+
+.pkgroot/
+.debroot/

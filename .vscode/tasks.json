@@ -1,0 +1,43 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "build",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": [],
+			"label": "npm: build",
+			"detail": "scripts/build.sh"
+		},
+		{
+			"type": "npm",
+			"script": "build",
+			"path": "packages/vscode-ide-companion",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "npm: build: vscode-ide-companion",
+			"detail": "npm run build -w packages/vscode-ide-companion"
+		},
+		{
+			"label": "build: repo",
+			"type": "shell",
+			"command": "npm run build",
+			"isBackground": false,
+			"problemMatcher": [
+				"$eslint-stylish",
+				"$tsc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "build core and run tests",
+			"type": "shell",
+			"command": "npm run build && npm run -w packages/core test",
+			"isBackground": false,
+			"group": "build"
+		}
+	]
+}
