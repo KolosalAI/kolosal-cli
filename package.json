@@ -23,7 +23,13 @@
     "test": "npm run test --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "clean": "npm run clean --workspaces --if-present"
+    "clean": "npm run clean --workspaces --if-present",
+    "docker:build": "./docker-build.sh",
+    "docker:build:latest": "./docker-build.sh latest",
+    "docker:run": "docker run -p 8080:8080 kolosal-ai/api-server:latest",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
   },
   "devDependencies": {
     "@types/node": "^22.9.0",
