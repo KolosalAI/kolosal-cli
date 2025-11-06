@@ -56,28 +56,7 @@ for (const workspaceName of workspacesToVersion) {
 const rootPackageJsonPath = resolve(process.cwd(), 'package.json');
 const newVersion = readJson(rootPackageJsonPath).version;
 
-// 6. Update the sandboxImageUri in the root package.json
-const rootPackageJson = readJson(rootPackageJsonPath);
-if (rootPackageJson.config?.sandboxImageUri) {
-  rootPackageJson.config.sandboxImageUri =
-    rootPackageJson.config.sandboxImageUri.replace(/:.*$/, `:${newVersion}`);
-  console.log(`Updated sandboxImageUri in root to use version ${newVersion}`);
-  writeJson(rootPackageJsonPath, rootPackageJson);
-}
-
-// 7. Update the sandboxImageUri in the cli package.json
-const cliPackageJsonPath = resolve(process.cwd(), 'packages/cli/package.json');
-const cliPackageJson = readJson(cliPackageJsonPath);
-if (cliPackageJson.config?.sandboxImageUri) {
-  cliPackageJson.config.sandboxImageUri =
-    cliPackageJson.config.sandboxImageUri.replace(/:.*$/, `:${newVersion}`);
-  console.log(
-    `Updated sandboxImageUri in cli package to use version ${newVersion}`,
-  );
-  writeJson(cliPackageJsonPath, cliPackageJson);
-}
-
-// 8. Run `npm install` to update package-lock.json.
+// 5. Run `npm install` to update package-lock.json.
 run('npm install');
 
 console.log(`Successfully bumped versions to v${newVersion}.`);

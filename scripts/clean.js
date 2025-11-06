@@ -27,13 +27,9 @@ const root = join(__dirname, '..');
 
 // remove npm install/build artifacts
 rmSync(join(root, 'node_modules'), { recursive: true, force: true });
-rmSync(join(root, 'bundle'), { recursive: true, force: true });
-rmSync(join(root, 'packages/cli/src/generated/'), {
-  recursive: true,
-  force: true,
-});
+
 const RMRF_OPTIONS = { recursive: true, force: true };
-rmSync(join(root, 'bundle'), RMRF_OPTIONS);
+
 // Dynamically clean dist directories in all workspaces
 const rootPackageJson = JSON.parse(
   readFileSync(join(root, 'package.json'), 'utf-8'),
@@ -44,12 +40,4 @@ for (const workspace of rootPackageJson.workspaces) {
     const pkgDir = dirname(join(root, pkgPath));
     rmSync(join(pkgDir, 'dist'), RMRF_OPTIONS);
   }
-}
-
-// Clean up vsix files in vscode-ide-companion
-const vsixFiles = globSync('packages/vscode-ide-companion/*.vsix', {
-  cwd: root,
-});
-for (const vsixFile of vsixFiles) {
-  rmSync(join(root, vsixFile), RMRF_OPTIONS);
 }
