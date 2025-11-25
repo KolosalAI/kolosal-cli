@@ -13,6 +13,16 @@ import type {
 import { CommandKind } from './types.js';
 import type { SavedModelEntry } from '../../config/savedModels.js';
 
+const KOLOSAL_API_BASE_URL = 'https://api.kolosal.ai/v1';
+
+function isKolosalCloudModel(entry: SavedModelEntry): boolean {
+  return (
+    entry.id.startsWith('kolosal-') ||
+    entry.label?.endsWith('(Kolosal Cloud)') ||
+    entry.baseUrl === KOLOSAL_API_BASE_URL
+  );
+}
+
 export const modelDeleteCommand: SlashCommand = {
   name: 'model-delete',
   altNames: ['delete-model'],
@@ -45,6 +55,11 @@ export const modelDeleteCommand: SlashCommand = {
 
     const currentModel = config.getModel();
     const deletableModels = savedModels.filter((entry) => {
+      // Exclude Kolosal Cloud models
+      if (isKolosalCloudModel(entry)) {
+        return false;
+      }
+      // Exclude currently active model
       const runtimeId = entry.runtimeModelId ?? entry.id;
       return runtimeId !== currentModel;
     });
