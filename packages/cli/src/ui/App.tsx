@@ -2180,6 +2180,21 @@ const App = ({ config, settings, startupWarnings = [], version }: AppProps) => {
         );
         return;
       }
+      // Prevent deletion of Kolosal Cloud models
+      const isKolosalCloudModel =
+        model.savedModel.id.startsWith('kolosal-') ||
+        model.label?.endsWith('(Kolosal Cloud)') ||
+        model.savedModel.baseUrl === KOLOSAL_API_BASE_URL;
+      if (isKolosalCloudModel) {
+        addItem(
+          {
+            type: MessageType.ERROR,
+            text: 'Cannot delete Kolosal Cloud models. These are managed by Kolosal and cannot be removed.',
+          },
+          Date.now(),
+        );
+        return;
+      }
       setModelToDelete(model);
       setIsModelDeleteDialogOpen(true);
     },
@@ -2194,15 +2209,48 @@ const App = ({ config, settings, startupWarnings = [], version }: AppProps) => {
       }
 
       if (choice === ModelDeleteChoice.DELETE && modelToDelete?.savedModel) {
+        // Double-check: prevent deletion of Kolosal Cloud models as a safety measure
+        const isKolosalCloudModel =
+          modelToDelete.savedModel.id.startsWith('kolosal-') ||
+          modelToDelete.label?.endsWith('(Kolosal Cloud)') ||
+          modelToDelete.savedModel.baseUrl === KOLOSAL_API_BASE_URL;
+        if (isKolosalCloudModel) {
+          addItem(
+            {
+              type: MessageType.ERROR,
+              text: 'Cannot delete Kolosal Cloud models. These are managed by Kolosal and cannot be removed.',
+            },
+            Date.now(),
+          );
+          handleModelDeleteClose();
+          return;
+        }
+
         const modelLabel = modelToDelete.label ?? modelToDelete.id;
         const existingSavedModels = (
           settings.merged.model?.savedModels ?? []
         ) as SavedModelEntry[];
 
-        const updatedModels = removeSavedModelEntry(
-          existingSavedModels,
-          modelToDelete.savedModel,
-        );
+        // Find the exact model to delete by matching both id and runtimeModelId
+        // to prevent accidentally deleting the wrong model
+        const modelToDeleteId = modelToDelete.savedModel.id;
+        const modelToDeleteRuntimeId = modelToDelete.savedModel.runtimeModelId;
+        const modelToDeleteBaseUrl = modelToDelete.savedModel.baseUrl;
+        const modelToDeleteProvider = modelToDelete.savedModel.provider;
+
+        const updatedModels = existingSavedModels.filter((entry) => {
+          // Match by exact id, provider, and baseUrl to ensure we delete the correct model
+          const idMatches = entry.id === modelToDeleteId;
+          const providerMatches = entry.provider === modelToDeleteProvider;
+          const baseUrlMatches =
+            (entry.baseUrl ?? '') === (modelToDeleteBaseUrl ?? '');
+          const runtimeIdMatches =
+            !modelToDeleteRuntimeId ||
+            entry.runtimeModelId === modelToDeleteRuntimeId;
+
+          // Only delete if all identifiers match
+          return !(idMatches && providerMatches && baseUrlMatches && runtimeIdMatches);
+        });
 
         settings.setValue(
           SettingScope.User,
